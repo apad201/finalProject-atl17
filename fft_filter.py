@@ -10,8 +10,13 @@ def makeMono(signal):
 def fourierTransform(signal, sampleRate):
 	length = len(signal)
 	freqs = fourier.rfftfreq(length, 1/sampleRate)
-	amplitudes = fourier.rfft(signal)
-	return freqs, amplitudes
+	powers = fourier.rfft(signal)
+	return freqs, powers
+	
+def inverseFourierTransform(powers):
+	signal = fourier.irfft(powers)
+	signal = np.int16(signal * (32767 / signal.max()))
+	return signal
 
 def plotFreqs(x, y, title, xLab, yLab, fileName, removeHigh = False):
 	plt.figure()
@@ -26,8 +31,13 @@ def plotFreqs(x, y, title, xLab, yLab, fileName, removeHigh = False):
 	plt.close('all')
 	return
 
-def trimFreqs(freqs, amps):
-	p = freqs.argsort()
+def naiveLP(freqs, powers, cutoff):
+	filteredPowers = powers.copy()
+	for i in range(len(freqs)):
+		if freqs[i] > cutoff:
+			filteredPowers[i] = 0.0 + 0.0j
+	return filteredPowers
+	
 	
 
 if __name__ == "__main__":
@@ -50,11 +60,26 @@ if __name__ == "__main__":
 	plt.plot(freqs, np.abs(amplitudes))
 	plt.show()
 	"""
+	
+	# Read in sample audio signal
 	rate, signal = read("audioSample.wav")
+	
+	# make mono
 	monoSignal = np.int16((signal[:,0] + signal[:,1])/2)
-	write("monoAudioSample.wav", rate, monoSignal) 
+	# write("monoAudioSample.wav", rate, monoSignal) 
 	# checking that making signal mono works as intended without ruining audio
 	
-	freqs, amps = fourierTransform(monoSignal, rate)
-	plotFreqs(freqs, np.abs(amps), "Frequency domain plot", "Frequency", "Amplitude", "sampleFreqPlot")
-	plotFreqs(freqs, np.abs(amps), "Frequency domain plot", "Frequency", "Amplitude", "sampleFreqPlotTrimmed", removeHigh = True)
+	# Apply FFT
+	freqs, powers = fourierTransform(monoSignal, rate)
+	
+	"""
+	plotFreqs(freqs, np.abs(powers), "Frequency domain plot", "Frequency", "Power", "sampleFreqPlot")
+	plotFreqs(freqs, np.abs(powers), "Frequency domain plot", "Frequency", "Power", "sampleFreqPlotTrimmed", removeHigh = True)
+	"""
+	# Apply naive low-pass filter
+	powersLP = naiveLP(freqs, powers, 440)
+	# plotFreqs(freqs, np.abs(powersLP), "Filtered frequency plot", "Frequency", "Power", "sampleFreqPlotFiltered", removeHigh = True)
+	
+	# Transform back into signal and save
+	filteredSignal = inverseFourierTransform(powersLP)
+	write("testingTransformedSignal.wav", rate, filteredSignal)

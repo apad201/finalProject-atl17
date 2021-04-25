@@ -86,10 +86,31 @@ def naiveLP(freqs, powers, cutoff):
 		if freqs[i] > cutoff:
 			filteredPowers[i] = 0.0 + 0.0j
 	return filteredPowers
-	
+
+"""
+LP: a sigmoid-based frequency-domain low-pass filter
+
+INPUTS:
+	freqs: np.array containing centers of frequency bins from rfftfreq
+	powers: np.array containing rfft of signal
+	centerFreq: frequency at which sigmoid should reach 0.5
+	ramp: steepness of sigmoid (i.e. coefficient of x values in sigmoid fn.
+		  recommended around 0.05-0.1)
+"""
 def LP(freqs, powers, centerFreq, ramp):
 	LPfilter = expit(ramp * (centerFreq - freqs))
 	return powers * LPfilter
+
+"""
+HP: a sigmoid-based frequency-domain high-pass filter
+
+same as calling LP(-1 * freqs, powers, -centerFreq, ramp)
+or calling LP(freqs, powers, centerFreq, -ramp)
+"""
+def HP(freqs, powers, centerFreq, ramp):
+	HPfilter = expit(ramp * (freqs - centerFreq))
+	return powers * HPfilter
+
 
 if __name__ == "__main__":
 	

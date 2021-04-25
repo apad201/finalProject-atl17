@@ -54,7 +54,7 @@ INPUTS:
 	xLab, yLab: x- and y-axis labels (strings)
 	fileName: filename (string)
 	xMax (optional): upper limit for x-axis, if not included, will show all
-					 x-values passed 
+					 x-values passed	 
 	
 OUTPUTS: none
 """

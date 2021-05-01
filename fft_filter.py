@@ -132,28 +132,6 @@ def BP(freqs, powers, lowerFreq, upperFreq, ramp):
 
 
 if __name__ == "__main__":
-	
-	
-	# Testing rfft on combination of sine tones
-	"""
-	srate = 44100
-	length = 5
-
-	x = np.linspace(0, length, srate*length, endpoint=False)
-	y = np.sin(2 * np.pi * 440 * x) + np.sin(2 * np.pi * 277.18 * x)
-
-	normY = np.int16(y / y.max() * 32767)
-
-	write("testingWavFile.wav", srate, normY) # should sound like a minor 6 with
-											  # C#4 and A4
-
-	freqs = fourier.rfftfreq(srate * length, 1 / srate)
-	amplitudes = fourier.rfft(normY)
-
-	plt.plot(freqs, np.abs(amplitudes))
-	plt.show()
-	"""
-	"""
 	# Read in sample audio signal:
 	rate, signal = read("audioSample.wav")
 	
@@ -199,7 +177,7 @@ if __name__ == "__main__":
 			  "Frequency", "Power", "sampleSigmoidBP", xMax = 1000)
 	BPsignal = inverseFourierTransform(powersBP)
 	write("BPsignal.wav", rate, BPsignal)
-	"""
+	
 	# Test frequency separation on another file:
 	
 	rate, signal = read("audioSample2.wav")

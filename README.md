@@ -6,7 +6,7 @@ My final project focused on using scipy's `fft` module to apply the Fast Fourier
 
 ## Applying the FFT
 
-The first step was to apply the FFT to audio signals. I used the scipy's built-in `fft.rfft` function, which is designed to apply the FFT to real-valued signals. The accompanying `fft.rfftfreq` function outputs a list containing the centers of the frequency bins created by `rfft`, which makes applying transformations much easier. To test these functions, I applied the FFT to `audioSample.wav`, which is a short audio segment from the end of a solo piano piece (Mendelssohn Op. 28). First, I had to convert the audio signal into a 16-bit WAV file with a sample rate of 48 kHz using an external audio editor. I then read the file into Python using `scipy.io.wavfile.read`. Before applying the FFT, I converted the stereo signal into a mono signal by averaging the two stereo channels. I then applied the FFT to the mono signal, and used the result to generate a frequency domain plot:
+The first step was to apply the FFT to audio signals. I used the scipy's built-in `fft.rfft` function, which is designed to apply the FFT to real-valued signals. The accompanying `fft.rfftfreq` function outputs a list containing the centers of the frequency bins created by `rfft`, which makes applying transformations much easier. To test these functions, I applied the FFT to `audioSample.wav`, which is a short audio segment from the end of a solo piano piece (Mendelssohn Op. 28). First, I had to convert the audio signal into a 16-bit WAV file with a sample rate of 44.1 kHz using an external audio editor. I then read the file into Python using `scipy.io.wavfile.read`. Before applying the FFT, I converted the stereo signal into a mono signal by averaging the two stereo channels. I then applied the FFT to the mono signal, and used the result to generate a frequency domain plot:
 
 ![frequencyDomain1](sampleFreqPlot.png)
 
@@ -28,7 +28,7 @@ The effect of the low-pass filter is clearly audible in the transformed audio si
 
 To address this issue, I wrote a second low-pass filter, this time using a sigmoid curve as the frequency response function. I applied the LP filter given by the frequency response function
 
-FUNCTION
+![LPfunction](./equations/LPequation.png)
 
 to `audioSample.wav`, and generated the corresponding frequency-domain plot of the result:
 
@@ -48,7 +48,8 @@ The effects of the HP filter are clearly audible in the corresponding audio file
 
 I implemented a band-pass filter using a combination of the sigmoid functions from the low-pass and high-pass filters. Specifically, I applied the filter given by the frequency response function
 
-FUNCTION
+![BPequation](./equations/BPequation.png)
+
 
 to `audioSample.wav` and generated the frequency-domain plot:
 
@@ -66,4 +67,4 @@ In this excerpt, the piano is playing below middle C and the strings are playing
 
 ![frequencyDomainSample2LP](sampleSigmoidLP2.png)
 
-The resulting audio file, `kseparatedSignal.wav`, has no traces of the strings. The piano part sounds "flattened," as expected. And it seems that some very low-frequency noise was amplified when the transformed signal was normalized to use the full range of the 16-bit sample depth. Nonetheless, the filter was certainly effective in eliminating the strings and separating out the piano part.
+The resulting audio file, `separatedSignal.wav`, has no traces of the strings. The piano part sounds "flattened," as expected. And it seems that some very low-frequency noise was amplified when the transformed signal was normalized to use the full range of the 16-bit sample depth. Nonetheless, the filter was certainly effective in eliminating the strings and separating out the piano part.

@@ -22,7 +22,7 @@ I then proceeded to apply filters to the transformed signal.
 
 The low-pass filter was the first filter I implemented. My first attempt at writing a LP filter, `naiveLP`, used a step function as the frequency response function: I set the power of all frequencies in bins whose centers were above the cutoff frequency to 0, while leaving all other frequencies' powers intact. The frequency-domain plot of the transformed signal showed the sharp cutoff at 440 Hz:
 
-![frequencyDomainLP1](sampleSigmoidLP.png)
+![frequencyDomainLP1](sampleNaiveLP.png)
 
 The effect of the low-pass filter is clearly audible in the transformed audio signal (`LPsignal1.wav`). However, we can clearly hear that the filter introduced an artifact—a buzz at about 440 Hz that lingers at the end of the audio file and which was not present in the original signal. This is perhaps a consequence of the Gibbs phenomenon, given that the frequency response function used was a step function. 
 

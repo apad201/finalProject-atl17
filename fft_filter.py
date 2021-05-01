@@ -96,6 +96,9 @@ INPUTS:
 	centerFreq: frequency at which sigmoid should reach 0.5
 	ramp: steepness of sigmoid (i.e. coefficient of x values in sigmoid fn.
 		  recommended around 0.05-0.1)
+		  
+OUTPUTS:
+	powersHP: powers scaled by appropriate HP frequency response curve
 """
 def LP(freqs, powers, centerFreq, ramp):
 	LPfilter = expit(ramp * (centerFreq - freqs))
@@ -110,6 +113,22 @@ or calling LP(freqs, powers, centerFreq, -ramp)
 def HP(freqs, powers, centerFreq, ramp):
 	HPfilter = expit(ramp * (freqs - centerFreq))
 	return powers * HPfilter
+
+"""
+BP: a sigmoid-based frequency-domain band-pass filter
+
+INPUTS:
+	freqs: np.array containing centers of frequency bins from rfftfreq
+	powers: np.array containing rfft of signal
+	lowerFreq, upperFreq: floats/ints containing lower and upper bounds of band
+	ramp: steepness of sigmoid on both sides (recommended 0.05-0.1)
+
+OUTPUTS:
+	powersBP: powers scaled by appropriate BP frequency response curve
+"""
+def BP(freqs, powers, lowerFreq, upperFreq, ramp):
+	BPfilter = expit(ramp * (lowerFreq - freqs)) + expit(ramp * (freqs - upperFreq)) - 1
+	return powers * BPfilter
 
 
 if __name__ == "__main__":
@@ -134,12 +153,12 @@ if __name__ == "__main__":
 	plt.plot(freqs, np.abs(amplitudes))
 	plt.show()
 	"""
-	
+	"""
 	# Read in sample audio signal:
 	rate, signal = read("audioSample.wav")
 	
 	# make mono:
-	monoSignal = np.int16((signal[:,0] + signal[:,1])/2)
+	monoSignal = makeMono(signal)
 	
 	# checking that making signal mono works as intended without ruining audio:
 	# write("monoAudioSample.wav", rate, monoSignal) 
@@ -147,24 +166,54 @@ if __name__ == "__main__":
 	# Apply FFT:
 	freqs, powers = fourierTransform(monoSignal, rate)
 	
-	
-	plotFreqs(freqs, np.abs(powers), "Frequency domain plot", "Frequency", "Power", "sampleFreqPlot")
-	plotFreqs(freqs, np.abs(powers), "Frequency domain plot", "Frequency", "Power", "sampleFreqPlotTrimmed", xMax = 1000)
+	plotFreqs(freqs, np.abs(powers), "Frequency domain plot", "Frequency",\
+			  "Power", "sampleFreqPlot")
+	plotFreqs(freqs, np.abs(powers), "Frequency domain plot", "Frequency",\
+			  "Power", "sampleFreqPlotTrimmed", xMax = 1000)
 	
 	# Apply naive low-pass filter:
 	powersLP = naiveLP(freqs, powers, 440)
-	plotFreqs(freqs, np.abs(powersLP), "Filtered frequency plot", "Frequency", "Power", "sampleNaiveLP", xMax = 1000)
+	plotFreqs(freqs, np.abs(powersLP), "Naive LP filter frequency plot",\
+			  "Frequency", "Power", "sampleNaiveLP", xMax = 1000)
+	LPsignal = inverseFourierTransform(powersLP)
+	write("LPsignal1.wav", rate, LPsignal)
 	
-	# Transform back into signal and save
-	filteredSignal = inverseFourierTransform(powersLP)
-	write("testingTransformedSignal.wav", rate, filteredSignal)
-	
-	# Now try applying less-naive LP filter
+	# Now try applying less-naive LP filter:
 	powersLP2 = LP(freqs, powers, 440, 0.075)
-	plotFreqs(freqs, np.abs(powersLP2), "Sigmoid-filtered frequency plot", \
+	plotFreqs(freqs, np.abs(powersLP2), "LP filter frequency plot", \
 							"Frequency", "Power", "sampleSigmoidLP",
 							xMax = 1000)
+	LPsignal2 = inverseFourierTransform(powersLP2)
+	write("LPsignal2.wav", rate, LPsignal2)
 	
-	# Tranform back into signal and save
-	filteredSignal2 = inverseFourierTransform(powersLP2)
-	write("testingTransformedSignal2.wav", rate, filteredSignal2)
+	# Apply high-pass filter:
+	powersHP = HP(freqs, powers, 440, 0.075)
+	plotFreqs(freqs, np.abs(powersHP), "HP filter frequency plot", \
+			  "Frequency", "Power", "sampleSigmoidHP", xMax = 1000)
+	HPsignal = inverseFourierTransform(powersHP)
+	write("HPsignal.wav", rate, HPsignal)
+	
+	# Apply band-pass filter:
+	powersBP = BP(freqs, powers, 440, 880, 0.075)
+	plotFreqs(freqs, np.abs(powersBP), "BP filter frequency plot", \
+			  "Frequency", "Power", "sampleSigmoidBP", xMax = 1000)
+	BPsignal = inverseFourierTransform(powersBP)
+	write("BPsignal.wav", rate, BPsignal)
+	"""
+	# Test frequency separation on another file:
+	
+	rate, signal = read("audioSample2.wav")
+	monoSignal = makeMono(signal)
+	
+	freqs, powers = fourierTransform(monoSignal, rate)
+	plotFreqs(freqs, np.abs(powers), "Frequency domain plot", "Frequency",\
+			  "Power", "sampleFreqPlot2", xMax = 4000)
+	
+	# Filter out everything above middle C (should filter out all strings)
+	powersLP = LP(freqs, powers, 262, 0.075)
+	plotFreqs(freqs, np.abs(powersLP), "LP filter frequency plot", "Frequency",\
+			  "Power", "sampleSigmoidLP2", xMax = 4000)
+	LPsignal = inverseFourierTransform(powersLP)
+	write("separatedSignal.wav", rate, LPsignal)
+	
+		

@@ -67,4 +67,4 @@ In this excerpt, the piano is playing below middle C and the strings are playing
 
 ![frequencyDomainSample2LP](sampleSigmoidLP2.png)
 
-The resulting audio file, `separatedSignal.wav`, has no traces of the strings. The piano part sounds "flattened," as expected. And it seems that some very low-frequency noise was amplified when the transformed signal was normalized to use the full range of the 16-bit sample depth. Nonetheless, the filter was certainly effective in eliminating the strings and separating out the piano part.
+The resulting audio file (`separatedSignal.wav`) has no traces of the strings. The piano part sounds "flattened," as expected. And it seems that some very low-frequency noise was amplified when the transformed signal was normalized to use the full range of the 16-bit sample depth. Nonetheless, the filter was certainly effective in eliminating the strings and separating out the piano part.

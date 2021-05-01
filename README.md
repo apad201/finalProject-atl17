@@ -2,7 +2,7 @@
 
 ## Introduction
 
-My final project focused on using scipy's `fft` module to apply the Fast Fourier Transform to audio signals. Using the FFT, I generated frequency-domain plots of audio signals and applied simple low-pass, high-pass, and band-pass filters to audio signals. I also used the inverse FFT functions to translate the transformed frequency-domain data into new audio files in order to listen to the effects of the various filters. Finally, I applied a low-pass filter to a section of a piece of music in order to isolate the lower voice. 
+My final project focused on using scipy's `fft` module to apply the Fast Fourier Transform to audio signals. Using the FFT, I generated frequency-domain plots of audio signals and applied simple low-pass, high-pass, and band-pass filters to audio signals. I also used the inverse FFT functions to translate the transformed frequency-domain data into new audio files in order to listen to the effects of the various filters. Finally, I applied a low-pass filter to a section of a piece of music in order to isolate the lower voice. All of my code is included in `fft_filter.py`.
 
 ## Applying the FFT
 

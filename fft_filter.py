@@ -132,6 +132,7 @@ def BP(freqs, powers, lowerFreq, upperFreq, ramp):
 
 
 if __name__ == "__main__":
+	
 	# Read in sample audio signal:
 	rate, signal = read("audioSample.wav")
 	
@@ -184,6 +185,7 @@ if __name__ == "__main__":
 	monoSignal = makeMono(signal)
 	
 	freqs, powers = fourierTransform(monoSignal, rate)
+	
 	plotFreqs(freqs, np.abs(powers), "Frequency domain plot", "Frequency",\
 			  "Power", "sampleFreqPlot2", xMax = 4000)
 	
@@ -194,4 +196,6 @@ if __name__ == "__main__":
 	LPsignal = inverseFourierTransform(powersLP)
 	write("separatedSignal.wav", rate, LPsignal)
 	
-		
+	powersHP = HP(freqs, powers, 262, 0.075)
+	HPsignal = inverseFourierTransform(powersHP)
+	write("separatedSignalHP.wav", rate, HPsignal)
